@@ -17,6 +17,21 @@ fn main() {
     println!("value: {}", sum);
 }
 
+fn evaluate_expression(exp_def: &str) -> usize {
+    let mut expression: String = exp_def.to_owned();
+    let mut paren_indices = find_parens(&expression);
+    while paren_indices.1 > 0 {
+        let paren_exp = &expression[paren_indices.0..paren_indices.1 + 1];
+        let result = evaluate_simple_expression(&paren_exp[1..paren_exp.len() - 1]);
+        expression = expression.replacen(paren_exp, &result, 1);
+        paren_indices = find_parens(&expression);
+    }
+
+    expression = evaluate_simple_expression(&expression);
+    let val: usize = expression.parse().unwrap();
+    return val;
+}
+
 fn find_parens(exp_def: &str) -> (usize, usize) {
     let mut paren_stack: Vec<usize> = Vec::with_capacity(exp_def.len());
 
@@ -31,21 +46,6 @@ fn find_parens(exp_def: &str) -> (usize, usize) {
         }
     }
     return (0, 0);
-}
-
-fn evaluate_expression(exp_def: &str) -> usize {
-    let mut expression: String = exp_def.to_owned();
-    let mut paren_indices = find_parens(&expression);
-    while paren_indices.1 > 0 {
-        let paren_exp = &expression[paren_indices.0..paren_indices.1 + 1];
-        let result = evaluate_simple_expression(&paren_exp[1..paren_exp.len() - 1]);
-        expression = expression.replacen(paren_exp, &result, 1);
-        paren_indices = find_parens(&expression);
-    }
-
-    expression = evaluate_simple_expression(&expression);
-    let val: usize = expression.parse().unwrap();
-    return val;
 }
 
 fn evaluate_simple_expression(exp_def: &str) -> String {
